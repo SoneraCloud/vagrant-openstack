@@ -9,7 +9,7 @@
 require "vagrant-openstack-provider"
 
 Vagrant.configure("2") do |config|
-  config.vm.box = "openstack"
+  # config.vm.box = "openstack"
 
   # Name of the ssh username of the instance
   config.ssh.username = "ubuntu"
@@ -39,7 +39,7 @@ Vagrant.configure("2") do |config|
     os.server_name = "vagrant-ubuntu"
     # If there are multiple available networks and security groups,
     # it will be necessary to specify the wanted ones using their names or ids (preferred)
-    os.security_groups = ["cloudytest-sg"] 
+    os.security_groups = ["cloudytest-sg", "SSH_from_Sonera_desktop_networks"] 
     os.networks = ["cloudytest-nw"]
     # Uncomment if you want to use your own keypair
     # os.keypair_name = " " 
