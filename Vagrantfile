@@ -1,49 +1,50 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-# All Vagrant configuration is done below. The "2" in Vagrant.configure
-# configures the configuration version (we support older styles for
-# backwards compatibility). Please don't change it unless you know what
-# you're doing.
+require 'vagrant-openstack-provider'
+require 'yaml'
 
-require "vagrant-openstack-provider"
+VAGRANTFILE_API_VERSION = '2'
+ENV['VAGRANT_DEFAULT_PROVIDER'] = 'openstack'
 
-Vagrant.configure("2") do |config|
-  # config.vm.box = "openstack"
+api_version = ENV['OS_IDENTITY_API_VERSION']
 
-  # Name of the ssh username of the instance
-  config.ssh.username = "ubuntu"
+dir = File.dirname(File.expand_path(__FILE__))
+instances = YAML.load_file("#{dir}/instances.yml")
 
-  # Uncomment if you want to use your own keypair
-  # config.ssh.private_key_path = " "
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  config.vm.hostname = instances['hostname']
+  config.ssh.username = instances['ssh_user']
+  config.ssh.private_key_path = instances['private_key']
+  # CirrOS uses /bin/sh instead of bash, so uncomment the following line if you're
+  # using CirrOS image
+  # config.ssh.shell = instances['shell']
 
-  # Uncomment if the image is Cirros
-  # config.ssh.shell = "/bin/sh"
-  
   config.vm.provider "openstack" do |os|
-    os.openstack_auth_url = "#{ENV['OS_AUTH_URL']}/tokens"
-    os.openstack_network_url = "https://go.soneracloud.fi:9696/v2.0"
-    os.openstack_volume_url = "https://go.soneracloud.fi:8776/v2/02fa5e2d0a904179849f37de3e32eb36"
+    os.openstack_auth_url = ENV['OS_AUTH_URL']
+    os.openstack_network_url = instances['neutron_api_url']
     os.username = ENV['OS_USERNAME']
-    os.password = ENV['OS_PASSWORD']  
-    os.tenant_name = ENV['OS_TENANT_NAME']
+    os.password = ENV['OS_PASSWORD']
     os.region = ENV['OS_REGION_NAME']
+    if api_version == '3'
+      os.project_name = ENV['OS_PROJECT_NAME']
+      os.domain_name = ENV['OS_USER_DOMAIN_NAME']
+      os.identity_api_version = api_version
+    else
+      os.tenant_name = ENV['OS_TENANT_NAME']
+    end
 
-    # Specify instance information
-    # These needs modifying
-    os.flavor = "sonera.linux.small"
-    os.image = "ubuntu-14.04.4"
-    os.floating_ip_pool = "ext-net"
-    # Uncomment if a specific IP is preferred 
-    # os.floating_ip = "X.X.X.X"
-    os.server_name = "vagrant-ubuntu"
-    # If there are multiple available networks and security groups,
-    # it will be necessary to specify the wanted ones using their names or ids (preferred)
-    os.security_groups = ["cloudytest-sg", "SSH_from_Sonera_desktop_networks"] 
-    os.networks = ["cloudytest-nw"]
-    # Uncomment if you want to use your own keypair
-    # os.keypair_name = " " 
-    # Uncomment if you want to attach a volume/volumes to the VM
-    # os.volumes = [{name: " ", device: "/dev/vdb"}]
+    os.flavor = instances['flavor']
+    os.image = instances['image']
+    os.floating_ip_pool = instances['external_network']
+    # It's possible to use a predefined floating IP with the following line uncommented
+    # os.floating_ip = instances['floating_ip']
+    os.server_name = instances['hostname']
+    os.security_groups = instances['security_groups']
+    os.networks = instances['networks']
+    os.keypair_name = instances['keypair_name']
+    os.volumes = instances['volumes']
+    os.availability_zone = instances['availability_zone']
+    os.sync_method = 'none'
   end
 end
