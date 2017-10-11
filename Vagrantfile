@@ -11,10 +11,12 @@ api_version = ENV['OS_IDENTITY_API_VERSION']
 
 dir = File.dirname(File.expand_path(__FILE__))
 instances = YAML.load_file("#{dir}/instances.yml")
+whoami = ENV['USERNAME']
+hostname = "vagrant-#{whoami}"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  config.vm.hostname = instances['hostname']
-  config.ssh.username = instances['ssh_user']
+  config.vm.hostname = hostname
+  config.ssh.username = whoami
   config.ssh.private_key_path = instances['private_key']
   # CirrOS uses /bin/sh instead of bash, so uncomment the following line if you're
   # using CirrOS image
@@ -39,12 +41,21 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     os.floating_ip_pool = instances['external_network']
     # It's possible to use a predefined floating IP with the following line uncommented
     # os.floating_ip = instances['floating_ip']
-    os.server_name = instances['hostname']
+    os.server_name = hostname
     os.security_groups = instances['security_groups']
     os.networks = instances['networks']
-    os.keypair_name = instances['keypair_name']
+    if instances['keypair_name'] != ''
+      os.keypair_name = instances['keypair_name']
+    else
+      os.keypair_name = whoami
+    end
     os.volumes = instances['volumes']
     os.availability_zone = instances['availability_zone']
+    os.user_data = "#cloud-config:
+      system_info:
+        default_user:
+          name: #{whoami}
+    "
     os.sync_method = 'none'
   end
 end

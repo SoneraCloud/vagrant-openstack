@@ -1,6 +1,4 @@
 ---
-ssh_user: 'ubuntu'
-hostname: 'vagrant-ubuntu'
 private_key: '~/.ssh/id_rsa'
 shell: '/bin/sh'
 neutron_api_url: 'https://network.fi-1.nebulacloud.fi:9696/v2.0'
@@ -8,8 +6,8 @@ flavor: 'nbl-free-tier'
 image: 'Ubuntu 14.04 Trusty Tahr x86_64 (LATEST)'
 floating_ip: ''
 external_network: 'Public-Helsinki-1'
-security_groups: ['default']
 networks: ['Network-Public-Helsinki-1']
-keypair_name: 'hoai'
-volumes: ['9965aa7f-0f62-40b7-8ecc-6615c7f4f9a2', '1fe09e32-073f-421c-8872-f0aff13499d6']
-availability_zone: 'helsinki-2'
+security_groups: []
+keypair_name: ''
+volumes: []
+availability_zone: 'helsinki-1'
