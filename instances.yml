@@ -1,0 +1,13 @@
+---
+private_key: '~/.ssh/id_rsa'
+shell: '/bin/sh'
+neutron_api_url: 'https://network.fi-1.nebulacloud.fi:9696/v2.0'
+flavor: 'nbl-free-tier'
+image: 'Ubuntu 14.04 Trusty Tahr x86_64 (LATEST)'
+floating_ip: ''
+external_network: 'Public-Helsinki-1'
+networks: ['Network-Public-Helsinki-1']
+security_groups: []
+keypair_name: ''
+volumes: []
+availability_zone: 'helsinki-1'
