@@ -11,7 +11,7 @@ api_version = ENV['OS_IDENTITY_API_VERSION']
 
 dir = File.dirname(File.expand_path(__FILE__))
 instances = YAML.load_file("#{dir}/instances.yml")
-whoami = ENV['USERNAME']
+whoami = ENV['USER']
 hostname = "vagrant-#{whoami}"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
